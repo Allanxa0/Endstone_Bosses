@@ -4,7 +4,7 @@ Plugin de bosses para servidores [Endstone](https://endstone.dev) (Minecraft Bed
 
 ## Estado
 
-Incluye el registro de bosses, atributos configurables, zonas de spawneo, aparición automática con enfriamiento, anuncio global y un sistema de combate dinámico (niveles, regeneración, minions, explosiones, rayos y efectos negativos). Las recompensas llegarán en futuras versiones.
+Incluye el registro de bosses, atributos configurables, zonas de spawneo, aparición automática con enfriamiento, anuncio global y un sistema de combate dinámico (niveles, regeneración, minions, explosiones, rayos y efectos negativos). Incluye además recompensas por boss, clasificación Top 5 por daño y drops de minions, administrables desde el juego.
 
 ## Bosses
 
@@ -24,11 +24,16 @@ Endstone no permite generar zombis bebé, por eso el miniboss usa Silverfish.
 | Comando | Permiso | Por defecto |
 |---------|---------|-------------|
 | `/bosses` | `bosses.command.bosses` | Operadores |
+| `/bossrank` | `bosses.command.info` | Todos |
+| `/bossrewards` | `bosses.command.info` | Todos |
 
-Abre un formulario donde se elige un boss para editar:
+`/bossrank` muestra el ranking de daño en vivo del combate de boss más cercano (en la misma dimensión) junto con la recompensa configurada para cada puesto. `/bossrewards` abre un formulario de solo lectura con los drops, las recompensas del Top 5 y los drops de minions de cada boss.
+
+`/bosses` abre un formulario donde se elige un boss para editar:
 
 - **Atributos**: nombre personalizado (admite códigos `&`), multiplicador de vida, multiplicador de daño y enfriamiento.
 - **Zonas de spawneo**: añadir la posición actual del jugador (con su dimensión) y eliminar zonas existentes.
+- **Recompensas**: drops del boss, recompensas del Top 5 y drops de sus minions (ver [Recompensas](#recompensas)).
 
 Los atributos se aplican solo a los bosses que se generen después y nunca a otras entidades.
 
@@ -60,15 +65,38 @@ El combate se activa en cuanto un jugador golpea a un boss y se desactiva por ti
 
 **Rayos.** El objetivo se elige por pesos: más probable para quien más daño hace y para quien está lejos (`kite_range`). Un jugador alcanzado no vuelve a ser objetivo durante `target_cooldown`. El rayo cae en la posición marcada, por lo que se puede esquivar.
 
-**Efectos negativos.** Veneno, Wither, Levitación, Náuseas, Ceguera, Hambre, Lentitud y Debilidad se agrupan en cuatro familias (daño, movilidad, visión y sustento) y nunca se combinan dos de la misma familia. Cada efecto tiene un coste y cada aplicación un presupuesto (`effects.budget` más `budget_per_level` por nivel). La elección depende de la situación (varios atacantes, un único atacante o daño explosivo) y de la habilidad que los provoca (`lightning` y `rage` también pueden añadirlos con `rider_chance`). Tras aplicar efectos, el jugador queda protegido de nuevos efectos hasta que terminen más `effects.grace` segundos, y con menos de `effects.safe_health` de vida no recibe veneno ni Wither. La Levitación incluye Caída lenta para evitar daño por caída.
+**Efectos negativos.** Cada vez que un boss aplica efectos a un jugador, este recibe un mensaje en el chat con el nombre personalizado del boss y los efectos. Veneno, Wither, Levitación, Náuseas, Ceguera, Hambre, Lentitud y Debilidad se agrupan en cuatro familias (daño, movilidad, visión y sustento) y nunca se combinan dos de la misma familia. Cada efecto tiene un coste y cada aplicación un presupuesto (`effects.budget` más `budget_per_level` por nivel). La elección depende de la situación (varios atacantes, un único atacante o daño explosivo) y de la habilidad que los provoca (`lightning` y `rage` también pueden añadirlos con `rider_chance`). Tras aplicar efectos, el jugador queda protegido de nuevos efectos hasta que terminen más `effects.grace` segundos, y con menos de `effects.safe_health` de vida no recibe veneno ni Wither. La Levitación incluye Caída lenta para evitar daño por caída.
 
 **Minions.** Se etiquetan con su boss, se eliminan al morir este (`remove_on_death`) y su vida y daño crecen `level_bonus` por nivel del boss. El daño de los Silverfish se aplica al golpear, sustituyendo al daño base.
 
 **Limitaciones de la API.** Endstone no expone efectos de poción, explosiones ni rayos: los efectos se aplican con el comando `/effect` ejecutado desde la consola, y los rayos y el TNT se generan como entidades (`minecraft:lightning_bolt` y `minecraft:tnt`). El TNT tiene la mecha vanilla y su explosión no destruye bloques salvo que `abilities.blast.break_blocks` sea `true`. Tampoco permite modificar atributos de mobs, por eso el daño de los minions se fija al recibir el golpe.
 
+## Recompensas
+
+Cada tipo de boss tiene tres listas independientes, editables desde `/bosses` > boss > **Recompensas**:
+
+| Lista | Cuándo se entrega |
+|-------|-------------------|
+| **Drops del boss** | Se sueltan en el suelo donde muere el boss |
+| **Recompensas Top 5** | Una lista por puesto (1 a 5); se entregan al inventario del jugador de ese puesto (lo que no quepa cae a sus pies) |
+| **Drops de minions** | Se sueltan donde muere cada Silverfish invocado por ese boss |
+
+Cada objeto tiene cantidad mínima, cantidad máxima y probabilidad (0.5 % a 100 %), y la tirada es independiente por objeto. Para añadir objetos:
+
+- **Añadir objeto en mano**: usa el objeto que sostienes.
+- **Añadir desde inventario**: lista tu inventario para elegir un objeto.
+
+El objeto conserva su nombre, lore y encantamientos, y al añadirlo se abre el formulario de cantidad y probabilidad (por defecto, la cantidad del stack y 100 %). Pulsar un objeto de la lista permite editarlo o eliminarlo. Cantidades superiores al tamaño de stack se reparten en varios stacks.
+
+**Top 5.** Cada golpe de un jugador a un boss suma su daño (limitado a la vida restante). Al morir el boss se anuncia en el chat su nombre y los cinco jugadores con más daño, con su puesto, daño y recompensa recibida. Con menos de cinco jugadores solo se listan los que participaron. Un jugador desconectado en ese momento aparece en la clasificación pero no recibe recompensa. Los mensajes se editan en `[messages]`.
+
+**Solo bosses del plugin.** El daño, el ranking y las recompensas solo se activan en bosses generados por el sistema de spawneo (llevan una etiqueta propia) y los drops de minions solo en los Silverfish invocados por un boss. Un Pigman, un Silverfish o cualquier otra entidad del mismo tipo que no sea del plugin no participa. Cada combate se lleva por separado, así que dos bosses del mismo tipo en zonas distintas no mezclan su clasificación. Los minions eliminados al morir su boss (`remove_on_death`) no sueltan drops.
+
+Endstone no ofrece interfaces de contenedor, por eso los objetos se eligen con formularios en lugar de un cofre.
+
 ## Datos
 
-`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. Se edita desde `/bosses`.
+`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. `plugins/bosses/rewards.json` guarda los drops, el Top 5 y los drops de minions de cada tipo. Ambos se editan desde `/bosses`.
 
 ## Configuración
 
@@ -98,7 +126,7 @@ Los cambios de `config.toml` se aplican al reiniciar el servidor. Si falta una s
 | `[abilities.curse]` | `burst`, `max_targets` |
 | `[effects]` | `duration_scale`, `amplifier_bonus`, `budget`, `budget_per_level`, `grace`, `safe_health`, `rider_chance` |
 | `[effects.<efecto>]` | `enabled`, `seconds`, `amplifier` para `poison`, `wither`, `levitation`, `nausea`, `blindness`, `hunger`, `slowness` y `weakness` |
-| `[messages]` | `level_up`, `rage`, `lightning`, `blast`, `curse` |
+| `[messages]` | `level_up`, `rage`, `lightning`, `blast`, `curse` (`{boss}`, `{effects}`), `ranking_title` (`{boss}`), `ranking_line` (`{position}`, `{player}`, `{damage}`, `{rewards}`), `no_reward` |
 
 El multiplicador de vida y de daño del boss, y su enfriamiento de aparición, siguen editándose desde `/bosses`.
 
