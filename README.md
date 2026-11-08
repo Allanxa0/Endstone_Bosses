@@ -31,7 +31,7 @@ Endstone no permite generar zombis bebé, por eso el miniboss usa Silverfish.
 
 `/bosses` abre un formulario donde se elige un boss para editar:
 
-- **Atributos**: nombre personalizado (admite códigos `&`), multiplicador de vida, multiplicador de daño y enfriamiento.
+- **Atributos**: nombre personalizado (admite códigos `&`), multiplicador de vida, multiplicador de daño y enfriamiento, que se escriben como números (admite decimales; los valores fuera de rango se ajustan al límite).
 - **Zonas de spawneo**: añadir la posición actual del jugador (con su dimensión) y eliminar zonas existentes.
 - **Recompensas**: drops del boss, recompensas del Top 5 y drops de sus minions (ver [Recompensas](#recompensas)).
 
@@ -90,13 +90,13 @@ El objeto conserva su nombre, lore y encantamientos, y al añadirlo se abre el f
 
 **Top 5.** Cada golpe de un jugador a un boss suma su daño (limitado a la vida restante). Al morir el boss se anuncia en el chat su nombre y los cinco jugadores con más daño, con su puesto, daño y recompensa recibida. Con menos de cinco jugadores solo se listan los que participaron. Un jugador desconectado en ese momento aparece en la clasificación pero no recibe recompensa. Los mensajes se editan en `[messages]`.
 
-**Solo bosses del plugin.** El daño, el ranking y las recompensas solo se activan en bosses generados por el sistema de spawneo (llevan una etiqueta propia) y los drops de minions solo en los Silverfish invocados por un boss. Un Pigman, un Silverfish o cualquier otra entidad del mismo tipo que no sea del plugin no participa. Cada combate se lleva por separado, así que dos bosses del mismo tipo en zonas distintas no mezclan su clasificación. Los minions eliminados al morir su boss (`remove_on_death`) no sueltan drops.
+**Solo bosses del plugin.** El daño, el ranking y las recompensas solo se activan en bosses generados por el sistema de spawneo (llevan una etiqueta propia) y los drops de minions solo en los Silverfish invocados por un boss. Fuera de las dimensiones con zonas de spawn, un Pigman, un Silverfish o cualquier otra entidad del mismo tipo que no sea del plugin no participa. Dentro de esas dimensiones, una entidad sin etiqueta del tipo de un boss que reciba un golpe de un jugador se adopta como boss y empieza a registrarse. Cada combate se lleva por separado, así que dos bosses del mismo tipo en zonas distintas no mezclan su clasificación. Los minions eliminados al morir su boss (`remove_on_death`) no sueltan drops.
 
 Endstone no ofrece interfaces de contenedor, por eso los objetos se eligen con formularios en lugar de un cofre.
 
 ## Datos
 
-`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. `plugins/bosses/rewards.json` guarda los drops, el Top 5 y los drops de minions de cada tipo. Ambos se editan desde `/bosses`.
+`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. `plugins/bosses/rewards.json` guarda los drops, el Top 5 y los drops de minions de cada tipo. Ambos se editan desde `/bosses`. `plugins/bosses/state.json` guarda el estado de cada boss vivo (vida, daño acumulado por jugador, posición y zona) para que sobreviva a la descarga de chunks y a los reinicios; no hace falta editarlo.
 
 ## Configuración
 
@@ -115,7 +115,7 @@ Los cambios de `config.toml` se aplican al reiniciar el servidor. Si falta una s
 
 | Sección | Claves |
 |---------|--------|
-| `[combat]` | `disabled_types`, `think_interval` (ticks), `window`, `global_cooldown`, `radius` |
+| `[combat]` | `disabled_types`, `think_interval` (ticks, 60 por defecto), `window`, `global_cooldown`, `radius` |
 | `[levels]` | `thresholds`, `damage_bonus`, `cooldown_scale`, `chance_bonus`, `name_format` (`{name}`, `{level}`, `{health}`, `{max}`) |
 | `[regeneration]` | `enabled`, `delay`, `rate` |
 | `[abilities.<habilidad>]` | `enabled`, `chance`, `cooldown` y las claves propias de cada habilidad |
