@@ -81,7 +81,7 @@ Cada tipo de boss tiene tres listas independientes, editables desde `/bosses` > 
 | **Recompensas Top 5** | Una lista por puesto (1 a 5); se entregan al inventario del jugador de ese puesto (lo que no quepa cae a sus pies) |
 | **Drops de minions** | Se sueltan donde muere cada Silverfish invocado por ese boss |
 
-Cada objeto tiene cantidad mínima, cantidad máxima y probabilidad (0.5 % a 100 %), y la tirada es independiente por objeto. Para añadir objetos:
+Cada objeto tiene cantidad mínima, cantidad máxima y probabilidad (0.01 % a 100 %, se escribe directamente y admite decimales como 0.1), y la tirada es independiente por objeto. Para añadir objetos:
 
 - **Añadir objeto en mano**: usa el objeto que sostienes.
 - **Añadir desde inventario**: lista tu inventario para elegir un objeto.
@@ -96,7 +96,7 @@ Endstone no ofrece interfaces de contenedor, por eso los objetos se eligen con f
 
 ## Datos
 
-`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. `plugins/bosses/rewards.json` guarda los drops, el Top 5 y los drops de minions de cada tipo. Ambos se editan desde `/bosses`. `plugins/bosses/state.json` guarda el estado de cada boss vivo (vida, daño acumulado por jugador, posición y zona) para que sobreviva a la descarga de chunks y a los reinicios; no hace falta editarlo.
+`plugins/bosses/data.json` guarda por tipo el nombre, los multiplicadores, el enfriamiento, las zonas y el fin del enfriamiento actual. `plugins/bosses/rewards.json` guarda los drops, el Top 5 y los drops de minions de cada tipo. Ambos se editan desde `/bosses`. `plugins/bosses/state.json` guarda el estado de cada boss vivo (vida, daño acumulado por jugador, posición y zona) para que sobreviva a la descarga de chunks y a los reinicios; no hace falta editarlo. Si al volver a cargarse el chunk el boss ya no existe, se vuelve a generar en su última posición con su vida, vida máxima y ranking de daño guardados (hasta 20 segundos después de que un jugador se acerque a menos de 32 bloques).
 
 ## Configuración
 
