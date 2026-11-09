@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Boss and miniboss types: Pigman, Piglin, Blaze, Bruga, Warden and Miniboss.
+- Boss and miniboss types: Ravager, Evoker, Blaze, Vindicator, Warden, Miniboss, Breeze, Bogged and Piglin Brute.
 - Health and damage multipliers per type, configurable in `config.toml`.
 - `/bosses` command (op by default) with a form to edit each boss type.
 - Spawn zones per boss type, registered from the player's current position and dimension, saved in `data.json`.
@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - An untagged entity of a boss type that a player hits inside a dimension with spawn zones is adopted as a boss.
 
 ### Changed
+- Boss health is now an exact value in points (1 to 10000, default is the vanilla health of the entity) instead of a multiplier; damage keeps its multiplier. Previous health multipliers are not converted and each boss starts with its default health.
+- Pigman is now Ravager, Piglin is now Evoker and Bruga is now Vindicator; Piglin Brute is a separate boss. Settings, zones, rewards and saved state of the old types carry over to the new ones.
 - The reward chance is now typed directly instead of using a slider; it accepts decimals such as `0.1` from 0.01 % to 100 %, so very rare drops can be configured.
 - The default `combat.think_interval` is now 60 ticks (3 s) instead of 20, which lowers the per-boss cost; existing `config.toml` files keep their value. The health shown in the name tag refreshes at that interval.
 - Health, damage and cooldown in the boss attributes form are now typed numbers (decimals allowed, values outside the allowed range are adjusted) instead of sliders.
